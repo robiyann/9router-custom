@@ -4,10 +4,12 @@ import { AI_PROVIDERS } from "@/shared/constants/providers";
 
 export async function GET() {
   try {
-    const list = Object.entries(AI_PROVIDERS).map(([id, info]) => {
-      const alias = info.alias || id;
-      const staticModels = PROVIDER_MODELS[alias] || [];
-      const modelIds = staticModels.map(m => m.id);
+    const list = Object.entries(AI_PROVIDERS)
+      .filter(([, info]) => !info.hidden)
+      .map(([id, info]) => {
+        const alias = info.alias || id;
+        const staticModels = PROVIDER_MODELS[alias] || [];
+        const modelIds = staticModels.map(m => m.id);
 
       // Merge TTS models
       if (Array.isArray(info.ttsConfig?.models)) {
