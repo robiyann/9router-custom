@@ -91,6 +91,8 @@ export async function getUsageForProvider(connection, proxyOptions = null) {
     case "minimax":
     case "minimax-cn":
       return await getMiniMaxUsage(apiKey, provider, proxyOptions);
+    case "askjune":
+      return await getAskJuneUsage(apiKey, proxyOptions);
     default:
       return { message: `Usage API not implemented for ${provider}` };
   }
@@ -1213,3 +1215,54 @@ async function getQoderUsage(accessToken, proxyOptions = null) {
     return { message: `Qoder connected. Unable to fetch usage: ${error.message}` };
   }
 }
+
+/**
+ * AskJune Usage
+ */
+async function getAskJuneUsage(apiKey, proxyOptions = null) {
+  if (!apiKey) {
+    return { message: "AskJune API key not available." };
+  }
+
+  try {
+    const response = await proxyAwareFetch("https://api.blockchain.info/ai/api/v1/usage", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        Accept: "application/json",
+      },
+    }, proxyOptions);
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        return { message: "AskJune API key invalid or expired." };
+      }
+      return { message: `AskJune quota API error (${response.status}).` };
+    }
+
+    const data = await response.json();
+    const remainingStr = data?.prepaid?.remaining;
+    if (remainingStr === undefined) {
+      return { message: "AskJune usage data format unrecognized." };
+    }
+
+    const remaining = parseFloat(remainingStr) || 0;
+    const quotas = {
+      prepaid: {
+        total: remaining,
+        used: 0,
+        remaining: remaining,
+        unit: "credits",
+        unlimited: false,
+      }
+    };
+
+    return {
+      plan: "Prepaid",
+      quotas,
+    };
+  } catch (error) {
+    return { message: `AskJune error: ${error.message}` };
+  }
+}
+

@@ -28,6 +28,27 @@ function withCodexReviewModels(models) {
 
 export const PROVIDER_MODELS = {
   // OAuth Providers (using alias)
+  aj: [
+    { id: "blockchain/june", name: "June AI" },
+    { id: "z-ai/glm-5.1", name: "GLM 5.1 (June)" },
+    { id: "deepseek/deepseek-v4-pro", name: "DeepSeek V4 Pro (June)" },
+    { id: "deepseek/deepseek-v4-flash", name: "DeepSeek V4 Flash (June)" },
+    { id: "moonshotai/kimi-k2.6", name: "Kimi K2.6 (June)" },
+    { id: "minimax/minimax-m2.7", name: "MiniMax M2.7 (June)" },
+    { id: "qwen/qwen3.5-397b-a17b", name: "Qwen 3.5 397B (June)" },
+    { id: "xiaomi/mimo-v2-flash", name: "MiMo V2 Flash (June)" },
+    { id: "google/gemma-4-31b-it", name: "Gemma 4 31B IT (June)" },
+    { id: "openai/gpt-oss-120b", name: "GPT OSS 120B (June)" },
+    { id: "openai/gpt-5.3-codex", name: "GPT 5.3 Codex (June)" },
+    { id: "openai/gpt-5.5", name: "GPT 5.5 (June)" },
+    { id: "openai/gpt-5.4-mini", name: "GPT 5.4 Mini (June)" },
+    { id: "x-ai/grok-4.3", name: "Grok 4.3 (June)" },
+    { id: "anthropic/claude-opus-4.8", name: "Claude Opus 4.8 (June)" },
+    { id: "anthropic/claude-sonnet-4.6", name: "Claude Sonnet 4.6 (June)" },
+    { id: "anthropic/claude-haiku-4.5", name: "Claude Haiku 4.5 (June)" },
+    { id: "google/gemini-3.1-pro", name: "Gemini 3.1 Pro (June)" },
+    { id: "google/gemini-3-flash", name: "Gemini 3 Flash (June)" }
+  ],
   cc: [  // Claude Code
     { id: "claude-opus-4-8", name: "Claude Opus 4.8" },
     { id: "claude-opus-4-7", name: "Claude Opus 4.7" },
@@ -872,6 +893,7 @@ export function getModelQuotaFamily(aliasOrId, modelId) {
 
 // OAuth providers that use short aliases (everything else: alias = id)
 const OAUTH_ALIASES = {
+  askjune: "aj",
   claude: "cc",
   codex: "cx",
   "gemini-cli": "gc",
