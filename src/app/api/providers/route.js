@@ -126,12 +126,8 @@ export async function POST(request) {
       isAnthropicCompatibleProvider(provider) ||
       isCustomEmbeddingProvider(provider);
 
-    if (isCompatible) {
-      const existingConns = await getProviderConnections({ provider });
-      if (existingConns.length > 0) {
-        return NextResponse.json({ error: "Only one connection is allowed for this compatible provider node" }, { status: 400 });
-      }
-    }
+    // Compatible provider nodes are now allowed to have multiple connections.
+    // The restriction limiting them to only one connection has been removed.
 
     let providerSpecificData = normalizeProviderSpecificData(provider, body, body.providerSpecificData);
 
