@@ -149,9 +149,12 @@ export default function ProviderLimitCard({
       {!loading && !error && !message && quotas?.length > 0 && (
         <div className="space-y-4">
           {quotas.map((quota, index) => {
-            // For Antigravity, use remainingPercentage if available, otherwise calculate
+            // If explicit remaining percentage is provided (e.g. for AskJune), use it.
+            // Otherwise, check remainingPercentage, or calculate from used/total.
             const percentage =
-              quota.remainingPercentage !== undefined
+              quota.remaining !== undefined
+                ? Math.round(quota.remaining)
+                : quota.remainingPercentage !== undefined
                 ? Math.round(((quota.total - quota.used) / quota.total) * 100)
                 : calculatePercentage(quota.used, quota.total);
             const unlimited = quota.total === 0 || quota.total === null;

@@ -37,8 +37,8 @@ describe("AskJune usage", () => {
     expect(usage.message).toBeUndefined();
     expect(usage.plan).toBe("Prepaid");
     expect(usage.quotas["prepaid"]).toMatchObject({
-      used: 0,
-      total: 839.339517,
+      used: 839.339517,
+      total: 1000,
       remaining: 839.339517,
       unit: "credits",
     });

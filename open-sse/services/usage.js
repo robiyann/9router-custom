@@ -1249,8 +1249,8 @@ async function getAskJuneUsage(apiKey, proxyOptions = null) {
     const remaining = parseFloat(remainingStr) || 0;
     const quotas = {
       prepaid: {
-        total: remaining,
-        used: 0,
+        total: 1000,
+        used: remaining,
         remaining: remaining,
         unit: "credits",
         unlimited: false,
