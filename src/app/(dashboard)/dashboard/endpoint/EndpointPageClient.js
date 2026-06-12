@@ -53,6 +53,7 @@ const CAVEMAN_LEVELS = [
   { id: "lite", label: "Lite", desc: "Drop filler, keep grammar" },
   { id: "full", label: "Full", desc: "Drop articles, fragments OK" },
   { id: "ultra", label: "Ultra", desc: "Telegraphic, max compression" },
+  { id: "godmode", label: "Godmode", desc: "Unfiltered rebel genius" },
 ];
 export default function APIPageClient({ machineId }) {
   const [keys, setKeys] = useState([]);
