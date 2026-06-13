@@ -6,13 +6,16 @@ const PLACEHOLDER = " ";
 
 // Provider-level rules: keyed by executor.provider
 const PROVIDER_RULES = {
-  deepseek: { scope: "all" }
+  deepseek: { scope: "all" },
+  "xiaomi-mimo": { scope: "all" },
+  "xiaomi-tokenplan": { scope: "all" }
 };
 
 // Model-level rules: matched by predicate against model id
 const MODEL_RULES = [
   { match: m => /^kimi-/i.test(m || ""), scope: "toolCalls" },
-  { match: m => /deepseek/i.test(m || ""), scope: "all" }
+  { match: m => /deepseek/i.test(m || ""), scope: "all" },
+  { match: m => /^mimo-/i.test(m || ""), scope: "all" }
 ];
 
 const DEEPSEEK_V4_PRO = "deepseek-v4-pro";

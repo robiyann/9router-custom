@@ -54,11 +54,36 @@ describe("injectReasoningContent — DeepSeek thinking round-trip", () => {
     expect(out.messages[0].reasoning_content).toBeDefined();
   });
 
+  it("applies provider-level rule for provider 'xiaomi-mimo' and 'xiaomi-tokenplan' (scope all)", () => {
+    const out1 = injectReasoningContent({
+      provider: "xiaomi-mimo",
+      model: "mimo-v2.5",
+      body: bodyWith([{ role: "assistant", content: "answer" }]),
+    });
+    expect(out1.messages[0].reasoning_content).toBeDefined();
+
+    const out2 = injectReasoningContent({
+      provider: "xiaomi-tokenplan",
+      model: "mimo-v2.5-pro",
+      body: bodyWith([{ role: "assistant", content: "answer" }]),
+    });
+    expect(out2.messages[0].reasoning_content).toBeDefined();
+  });
+
   it("matches deepseek model id case-insensitively for custom providers (#1543)", () => {
     const out = injectReasoningContent({
       provider: "openai-compatible-custom",
       model: "DeepSeek-V4-Flash",
       body: bodyWith([assistantWithToolCall]),
+    });
+    expect(out.messages[0].reasoning_content).toBeDefined();
+  });
+
+  it("matches mimo model id for custom providers", () => {
+    const out = injectReasoningContent({
+      provider: "openai-compatible-custom",
+      model: "mimo-v2.5-pro",
+      body: bodyWith([{ role: "assistant", content: "answer" }]),
     });
     expect(out.messages[0].reasoning_content).toBeDefined();
   });
