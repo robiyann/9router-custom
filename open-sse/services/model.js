@@ -1,6 +1,6 @@
 // Provider alias to ID mapping
 const ALIAS_TO_PROVIDER_ID = {
-  aj: "askjune",
+
   cc: "claude",
   cx: "codex",
   gc: "gemini-cli",

@@ -113,12 +113,22 @@ export default function CompatibleModelsSection({ providerStorageAlias, provider
   const resolveAlias = (modelId) => {
     const fullModel = `${providerStorageAlias}/${modelId}`;
     // Skip if this exact model already has an alias
-    if (Object.values(modelAliases).includes(fullModel)) return null;
+    const existingAlias = Object.entries(modelAliases).find(([, m]) => m === fullModel);
+    if (existingAlias) return null;
+    
     const baseAlias = generateDefaultAlias(modelId);
     if (!modelAliases[baseAlias]) return baseAlias;
+    
     const prefixedAlias = `${providerDisplayAlias}-${baseAlias}`;
     if (!modelAliases[prefixedAlias]) return prefixedAlias;
-    return null;
+    
+    // If both are taken, append a number suffix to prefixedAlias until unique
+    let counter = 2;
+    while (true) {
+      const candidate = `${prefixedAlias}-${counter}`;
+      if (!modelAliases[candidate]) return candidate;
+      counter++;
+    }
   };
 
   const handleAdd = async () => {

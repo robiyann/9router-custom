@@ -149,7 +149,7 @@ export default function ProviderLimitCard({
       {!loading && !error && !message && quotas?.length > 0 && (
         <div className="space-y-4">
           {quotas.map((quota, index) => {
-            // If explicit remaining percentage is provided (e.g. for AskJune), use it.
+            // If explicit remaining percentage is provided, use it.
             // Otherwise, check remainingPercentage, or calculate from used/total.
             const percentage =
               quota.remaining !== undefined

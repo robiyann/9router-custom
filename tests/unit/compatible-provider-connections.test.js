@@ -182,11 +182,14 @@ describe("compatible provider connections API", () => {
     expect(secondResponse.status).toBe(201);
     expect(secondBody.connection).toBeDefined();
     expect(storedConnections).toHaveLength(2);
-    expectCompatibleConnection(storedConnections[0], ctx.node, { apiType: "chat" });
+
+    // Sort alphabetically by name to make the assertions independent of database insertion/fetch order
+    const sorted = [...storedConnections].sort((a, b) => a.name.localeCompare(b.name));
+    expectCompatibleConnection(sorted[0], ctx.node, { apiType: "chat" });
     
     // For the second connection, defaultModel is test-model-2
-    expect(storedConnections[1].provider).toBe(ctx.node.id);
-    expect(storedConnections[1].name).toBe("Test Connection 2");
-    expect(storedConnections[1].defaultModel).toBe("test-model-2");
+    expect(sorted[1].provider).toBe(ctx.node.id);
+    expect(sorted[1].name).toBe("Test Connection 2");
+    expect(sorted[1].defaultModel).toBe("test-model-2");
   });
 });

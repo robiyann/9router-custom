@@ -207,28 +207,7 @@ export function parseQuotaData(provider, data) {
         }
         break;
 
-      case "askjune":
-        if (data.message) {
-          normalizedQuotas.push({
-            name: "error",
-            used: 0,
-            total: 0,
-            resetAt: null,
-            message: data.message,
-          });
-        } else if (data.quotas) {
-          Object.entries(data.quotas).forEach(([name, quota]) => {
-            const remainingVal = quota.total > 0 ? (quota.used / quota.total) * 100 : 0;
-            normalizedQuotas.push({
-              name: name === "prepaid" ? "Prepaid Balance" : name,
-              used: quota.used || 0,
-              total: quota.total || 0,
-              resetAt: quota.resetAt || null,
-              remaining: remainingVal,
-            });
-          });
-        }
-        break;
+
 
 
       default:
