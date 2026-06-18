@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { PROVIDER_MODELS } from "@/shared/constants/models";
 import { AI_PROVIDERS } from "@/shared/constants/providers";
+import { getProviderNodes, getModelAliases } from "@/models";
 
 export async function GET() {
   try {
@@ -43,6 +44,33 @@ export async function GET() {
         models: modelIds,
       };
     });
+
+    // Merge custom compatible providers from the database (providerNodes)
+    try {
+      const customNodes = await getProviderNodes();
+      const modelAliases = await getModelAliases();
+
+      for (const node of customNodes) {
+        const nodePrefix = node.prefix || node.id;
+        // Find aliases that map to this node (e.g. key: "nodePrefix/model-id", value: "nodeId/model-id" or similar)
+        // Note: Aliases are stored using the raw providerId as key, i.e., fullModel starts with "node.id/"
+        const nodeModels = Object.entries(modelAliases)
+          .filter(([, fullModel]) => typeof fullModel === "string" && fullModel.startsWith(`${node.id}/`))
+          .map(([, fullModel]) => fullModel.replace(`${node.id}/`, ""));
+
+        // Always include a generic 'model-id' or placeholder model to allow configuration when no alias exists
+        const uniqueModels = Array.from(new Set(["model-id", ...nodeModels]));
+
+        list.push({
+          id: node.id,
+          name: node.name || node.id,
+          alias: nodePrefix,
+          models: uniqueModels,
+        });
+      }
+    } catch (dbError) {
+      console.log("Error loading custom providers/aliases from database:", dbError);
+    }
 
     return NextResponse.json({ providers: list });
   } catch (error) {
