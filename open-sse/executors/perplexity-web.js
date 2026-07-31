@@ -3,7 +3,7 @@ import { PROVIDERS } from "../config/providers.js";
 import { SSE_DONE, SSE_HEADERS_NO_BUFFER } from "../utils/sseConstants.js";
 import { sseChunk } from "../utils/sse.js";
 
-const PPLX_SSE_ENDPOINT = PROVIDERS["perplexity-web"].baseUrl;
+const PPLX_SSE_ENDPOINT = PROVIDERS["perplexity-web"]?.baseUrl || "https://www.perplexity.ai/socket.io/";
 const PPLX_API_VERSION = "2.18";
 const PPLX_USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36";
 
