@@ -86,6 +86,15 @@ startCacheCleanup();
 export async function getProjectIdForConnection(connectionId, accessToken, provider = "gemini-cli") {
     if (!connectionId || !accessToken) return null;
 
+    // Check if onboarding is enabled in settings (defaults to false for 0ms delay)
+    try {
+        const { getSettings } = await import("@/lib/localDb");
+        const settings = await getSettings();
+        if (settings.agOnboardingEnabled === false) {
+            return null;
+        }
+    } catch (_) { /* ignore */ }
+
     // Return cached value if still fresh
     const cached = projectIdCache.get(connectionId);
     if (cached && Date.now() - cached.fetchedAt < CACHE_TTL_MS) {
@@ -103,14 +112,15 @@ export async function getProjectIdForConnection(connectionId, accessToken, provi
     const promise = (async () => {
         try {
             const projectId = await fetchProjectId(accessToken, controller.signal, provider);
+            projectIdCache.set(connectionId, {projectId, fetchedAt: Date.now()});
             if (projectId) {
-                projectIdCache.set(connectionId, {projectId, fetchedAt: Date.now()});
                 return projectId;
             }
             console.warn("[ProjectId] could not fetch projectId for connection", connectionId.slice(0, 8));
             return null;
         } catch (error) {
             console.warn(`[ProjectId] Error fetching project ID: ${error.message}`);
+            projectIdCache.set(connectionId, {projectId: null, fetchedAt: Date.now()});
             return null;
         } finally {
             pendingFetches.delete(connectionId);

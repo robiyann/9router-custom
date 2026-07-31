@@ -64,6 +64,7 @@ export default function ProviderDetailPage() {
   const [bulkUpdatingProxy, setBulkUpdatingProxy] = useState(false);
   const [providerStrategy, setProviderStrategy] = useState(null);
   const [providerStickyLimit, setProviderStickyLimit] = useState("");
+  const [agOnboarding, setAgOnboarding] = useState(false);
   const [thinkingMode, setThinkingMode] = useState("auto");
   const [autoPing, setAutoPing] = useState({ enabled: false, connections: {} });
   const [suggestedModels, setSuggestedModels] = useState([]);
@@ -312,6 +313,7 @@ export default function ProviderDetailPage() {
       const override = (settingsData.providerStrategies || {})[providerId] || {};
       setProviderStrategy(override.fallbackStrategy || null);
       setProviderStickyLimit(override.stickyRoundRobinLimit != null ? String(override.stickyRoundRobinLimit) : "1");
+      setAgOnboarding(settingsData.agOnboardingEnabled === true);
       // Load per-provider thinking config
       const thinkingCfg = (settingsData.providerThinking || {})[providerId] || {};
       setThinkingMode(thinkingCfg.mode || "auto");
@@ -402,6 +404,19 @@ export default function ProviderDetailPage() {
   const handleStickyLimitChange = (value) => {
     setProviderStickyLimit(value);
     saveProviderStrategy("round-robin", value);
+  };
+
+  const handleAgOnboardingToggle = async (enabled) => {
+    setAgOnboarding(enabled);
+    try {
+      await fetch("/api/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ agOnboardingEnabled: enabled }),
+      });
+    } catch (error) {
+      console.log("Error saving onboarding setting:", error);
+    }
   };
 
   const saveThinkingConfig = async (mode) => {
@@ -1488,6 +1503,15 @@ export default function ProviderDetailPage() {
                   </div>
                 )}
               </div>
+              {(providerId === "antigravity" || providerId === "gemini-cli") && (
+                <div className="flex items-center gap-2 border-l border-border/50 pl-3">
+                  <span className="text-xs text-text-muted font-medium">GCP Onboarding</span>
+                  <Toggle
+                    checked={agOnboarding}
+                    onChange={handleAgOnboardingToggle}
+                  />
+                </div>
+              )}
             </div>
           </div>
 
