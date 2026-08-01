@@ -22,6 +22,31 @@ import { detectFormatByEndpoint } from "open-sse/translator/formats.js";
 import * as log from "../utils/logger.js";
 import { updateProviderCredentials, checkAndRefreshToken } from "../services/tokenRefresh.js";
 import { getProjectIdForConnection } from "open-sse/services/projectId.js";
+import { getClientIp } from "@/lib/auth/loginLimiter.js";
+
+// In-memory rate limiter for chat endpoint (PR #1) with cleanup
+const _rlMap = new Map();
+const RL_WINDOW_MS = 60_000;
+const RL_MAX_REQ = 60;
+const RL_MAX_MAP_SIZE = 10_000;
+
+function _checkChatRateLimit(ip) {
+  const now = Date.now();
+  if (_rlMap.size > RL_MAX_MAP_SIZE) {
+    for (const [k, v] of _rlMap.entries()) {
+      if (now - v.windowStart > RL_WINDOW_MS) _rlMap.delete(k);
+    }
+  }
+  const entry = _rlMap.get(ip) || { count: 0, windowStart: now };
+  if (now - entry.windowStart > RL_WINDOW_MS) {
+    entry.count = 1;
+    entry.windowStart = now;
+  } else {
+    entry.count += 1;
+  }
+  _rlMap.set(ip, entry);
+  return entry.count > RL_MAX_REQ;
+}
 
 /**
  * Handle chat completion request
@@ -29,6 +54,13 @@ import { getProjectIdForConnection } from "open-sse/services/projectId.js";
  * Format detection and translation handled by translator
  */
 export async function handleChat(request, clientRawRequest = null) {
+  if (request) {
+    const clientIp = getClientIp(request);
+    if (_checkChatRateLimit(clientIp)) {
+      log.warn("CHAT", `Rate limit exceeded for IP: ${clientIp}`);
+      return errorResponse(HTTP_STATUS.RATE_LIMITED, "Too many requests");
+    }
+  }
   let body;
   try {
     body = await request.json();

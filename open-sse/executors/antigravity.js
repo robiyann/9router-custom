@@ -134,7 +134,7 @@ export class AntigravityExecutor extends BaseExecutor {
   }
 
   transformRequest(model, body, stream, credentials) {
-    const projectId = credentials?.projectId || this.generateProjectId();
+    const projectId = credentials?.projectId || this.generateProjectId(credentials?.connectionId || credentials?.email || credentials?.connectionName);
 
     // OpenAI clients may include stream_options even for non-streaming calls.
     // Google generateContent rejects that combination before processing the request.
@@ -308,7 +308,11 @@ export class AntigravityExecutor extends BaseExecutor {
     }
   }
 
-  generateProjectId() {
+  generateProjectId(seed = null) {
+    if (seed) {
+      const hash = crypto.createHash("sha256").update(String(seed)).digest("hex").slice(0, 10);
+      return `cloudcode-pa-${hash}`;
+    }
     const adj = ["useful", "bright", "swift", "calm", "bold"][Math.floor(Math.random() * 5)];
     const noun = ["fuze", "wave", "spark", "flow", "core"][Math.floor(Math.random() * 5)];
     return `${adj}-${noun}-${crypto.randomUUID().slice(0, 5)}`;
