@@ -8,10 +8,10 @@ import { ANTHROPIC_API_VERSION, OPENAI_COMPAT_BASE, ANTHROPIC_COMPAT_BASE } from
  * BaseExecutor - Base class for provider executors
  */
 export class BaseExecutor {
-  constructor(provider, config) {
+  constructor(provider, config = {}) {
     this.provider = provider;
-    this.config = config;
-    this.noAuth = config?.noAuth || false;
+    this.config = config || {};
+    this.noAuth = this.config.noAuth || false;
   }
 
   getProvider() {
@@ -19,7 +19,7 @@ export class BaseExecutor {
   }
 
   getBaseUrls() {
-    return this.config.baseUrls || (this.config.baseUrl ? [this.config.baseUrl] : []);
+    return this.config?.baseUrls || (this.config?.baseUrl ? [this.config.baseUrl] : []);
   }
 
   getFallbackCount() {
@@ -39,7 +39,7 @@ export class BaseExecutor {
       return `${normalized}/messages`;
     }
     const baseUrls = this.getBaseUrls();
-    return baseUrls[urlIndex] || baseUrls[0] || this.config.baseUrl;
+    return baseUrls[urlIndex] || baseUrls[0] || this.config?.baseUrl || OPENAI_COMPAT_BASE;
   }
 
   buildHeaders(credentials, stream = true) {

@@ -78,8 +78,9 @@ const REFRESH_GRANTS = Object.fromEntries(
 );
 
 export class DefaultExecutor extends BaseExecutor {
-  constructor(provider) {
-    super(provider, PROVIDERS[provider] || PROVIDERS.openai);
+  constructor(provider, config = null) {
+    const defaultConfig = PROVIDERS[provider] || PROVIDERS.openai || { baseUrl: OPENAI_COMPAT_BASE, format: "openai" };
+    super(provider, config || defaultConfig);
   }
 
   transformRequest(model, body) {
