@@ -11,6 +11,10 @@ import p8 from "./google-tts.js";
 import p9 from "./grok-cli.js";
 import p10 from "./mistral.js";
 
+import p11 from "./codebuddy-intl.js";
+import p12 from "./codebuddy-cn.js";
+import p13 from "./qoder.js";
+
 export default [
   p0,
   p1,
@@ -23,4 +27,8 @@ export default [
   p8,
   p9,
   p10,
+  p11,
+  p12,
+  p13,
 ];
+

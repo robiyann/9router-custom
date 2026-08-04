@@ -17,6 +17,15 @@ export class CodeBuddyIntlExecutor extends DefaultExecutor {
     const transformed = super.transformRequest(model, body, stream, credentials);
     transformed.stream = true;
 
+    // CodeBuddy requires a system message in the messages array.
+    // Without a system message, CodeBuddy returns HTTP 400 "Parse message failed: 11101:invalid request".
+    if (Array.isArray(transformed.messages)) {
+      const hasSystem = transformed.messages.some(m => m && m.role === "system");
+      if (!hasSystem) {
+        transformed.messages = [{ role: "system", content: "" }, ...transformed.messages];
+      }
+    }
+
     const eff = transformed.reasoning_effort;
     if (eff === "none" || eff === "off") {
       delete transformed.reasoning_effort;
